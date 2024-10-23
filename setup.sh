@@ -4,23 +4,38 @@
 echo "Updating system..."
 sudo apt update && sudo apt upgrade -y
 
-# Install pip if not installed
-echo "Checking if pip is installed..."
-if ! command -v pip3 &> /dev/null
-then
-    echo "pip not found. Installing pip..."
-    sudo apt install python3-pip -y
+# Install pip and venv if not installed
+echo "Checking if pip and venv are installed..."
+sudo apt install python3-pip python3-venv -y
+
+# Create a virtual environment with access to system-wide packages
+VENV_DIR="$HOME/rpi_mqtt_venv"
+if [ ! -d "$VENV_DIR" ]; then
+    echo "Creating virtual environment in $VENV_DIR with access to system packages..."
+    python3 -m venv $VENV_DIR --system-site-packages
 else
-    echo "pip is already installed."
+    echo "Virtual environment already exists at $VENV_DIR"
 fi
 
-# Install paho-mqtt library for MQTT
-echo "Installing paho-mqtt..."
-pip3 install paho-mqtt
+# Activate the virtual environment
+echo "Activating the virtual environment..."
+source $VENV_DIR/bin/activate
 
-# Install RPi.GPIO for GPIO access
-echo "Installing RPi.GPIO for GPIO access..."
-pip3 install RPi.GPIO
+# Install paho-mqtt in the virtual environment
+echo "Installing paho-mqtt in the virtual environment..."
+pip install paho-mqtt
+
+# Check if RPi.GPIO is available from the system packages
+if python3 -c "import RPi.GPIO" &> /dev/null; then
+    echo "RPi.GPIO is already available from the system site packages."
+else
+    # Install RPi.GPIO only if not available
+    echo "RPi.GPIO not found, installing RPi.GPIO..."
+    pip install RPi.GPIO
+fi
 
 # Confirmation message
 echo "Setup complete. MQTT and GPIO libraries are installed!"
+
+# Deactivate the virtual environment
+deactivate
