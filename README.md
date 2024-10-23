@@ -1,5 +1,7 @@
 IOT-CO2
 =======
+# install git 
+sudo apt install git
 
 # Clone the Git repository
 git clone https://github.com/lauestlauest/IIOT_rpi.git
