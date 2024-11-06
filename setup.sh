@@ -29,6 +29,7 @@ if [ -f "$VENV_DIR/bin/activate" ]; then
     echo "Installing paho-mqtt and spidev in the virtual environment..."
     pip install --upgrade pip  # Upgrade pip within the venv
     pip install paho-mqtt spidev
+    pip install SX127x
 
     # Check if RPi.GPIO is available from system packages
     if python3 -c "import RPi.GPIO" &> /dev/null; then
