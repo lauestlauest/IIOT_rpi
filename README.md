@@ -27,7 +27,10 @@ sudo reboot
 ```
 
 ### Activate the virtual environment
+```
 source $HOME/rpi_mqtt_venv/bin/activate
-
+```
 ### Run your Python script
+```
 python3 your_mqtt_script.py
+```
