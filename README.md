@@ -20,8 +20,11 @@ chmod +x setup.sh
 ```
 sudo raspi-config
 ```
-Navigate to Interfacing Options → Serial and enable it. When asked if you want a login shell to be accessible over serial, select No. This allows your program to access the serial interface.
-
+Navigate to Interfacing Options → SPI and enable it.
+now reboot the pi 
+```
+sudo reboot
+```
 
 ### Activate the virtual environment
 source $HOME/rpi_mqtt_venv/bin/activate
