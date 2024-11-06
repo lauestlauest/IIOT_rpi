@@ -6,8 +6,8 @@ import time
 BOARD.setup()
 
 class LoRaSender(LoRa):
-    def __init__(self, verbose=False):
-        super(LoRaSender, self).__init__(verbose)
+    def __init__(self):
+        super(LoRaSender, self).__init__()  # Removed `verbose`
         self.set_mode(MODE.SLEEP)
         self.set_dio_mapping([1, 0, 0, 0, 0, 0])
 
@@ -26,8 +26,8 @@ class LoRaSender(LoRa):
         time.sleep(1)  # Give time for transmission
         self.set_mode(MODE.SLEEP)
 
-# Instantiate and start sending
-lora = LoRaSender(verbose=False)
+# Instantiate and start sending without verbose
+lora = LoRaSender()
 lora.start()
 
 try:
