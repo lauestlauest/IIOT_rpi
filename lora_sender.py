@@ -1,42 +1,71 @@
-from SX127x.LoRa import LoRa
-from SX127x.board_config import BOARD
+from LoRaRF import SX127x, LoRaSpi, LoRaGpio
 import time
 
-# Initialize the board
-BOARD.setup()
+# Begin LoRa radio with connected SPI bus and IO pins (cs and reset) on GPIO
+# SPI is defined by bus ID and cs ID and IO pins defined by chip and offset number
+spi = LoRaSpi(0, 0)
+cs = LoRaGpio(0, 8)
+reset = LoRaGpio(0, 24)
+LoRa = SX127x(spi, cs, reset)
+print("Begin LoRa radio")
+if not LoRa.begin() :
+    raise Exception("Something wrong, can't begin LoRa radio")
 
-class LoRaSender(LoRa):
-    def __init__(self):
-        super(LoRaSender, self).__init__()  # Removed `verbose`
-        self.set_mode(MODE.SLEEP)
-        self.set_dio_mapping([1, 0, 0, 0, 0, 0])
+# Set frequency to 915 Mhz
+print("Set frequency to 915 Mhz")
+LoRa.setFrequency(915000000)
 
-    def start(self):
-        self.set_mode(MODE.STDBY)
-        self.set_pa_config(pa_select=1)
-        self.set_freq(433)
-        self.set_spreading_factor(7)
-        self.set_bw(7)  # 125 kHz bandwidth
-        self.set_coding_rate(CODING_RATE.CR4_5)
-        self.set_preamble(8)
-        self.set_sync_word(0x12)
-        self.write_payload(b'Hello, LoRa!')
-        print("Sending message...")
-        self.set_mode(MODE.TX)
-        time.sleep(1)  # Give time for transmission
-        self.set_mode(MODE.SLEEP)
+# Set TX power, this function will set PA config with optimal setting for requested TX power
+print("Set TX power to +17 dBm")
+LoRa.setTxPower(17, LoRa.TX_POWER_PA_BOOST)                     # TX power +17 dBm using PA boost pin
 
-# Instantiate and start sending without verbose
-lora = LoRaSender()
-lora.start()
+# Configure modulation parameter including spreading factor (SF), bandwidth (BW), and coding rate (CR)
+# Receiver must have same SF and BW setting with transmitter to be able to receive LoRa packet
+print("Set modulation parameters:\n\tSpreading factor = 7\n\tBandwidth = 125 kHz\n\tCoding rate = 4/5")
+LoRa.setSpreadingFactor(7)                                      # LoRa spreading factor: 7
+LoRa.setBandwidth(125000)                                       # Bandwidth: 125 kHz
+LoRa.setCodeRate(5)                                             # Coding rate: 4/5
 
-try:
-    while True:
-        lora.write_payload(b'Hello, LoRa!')
-        print(f"Message sent: {'Hello, LoRa!'}")
-        time.sleep(20)  # Wait for 20 seconds before sending the next message
-except KeyboardInterrupt:
-    print("Stopping...")
+# Configure packet parameter including header type, preamble length, payload length, and CRC type
+# The explicit packet includes header contain CR, number of byte, and CRC type
+# Receiver can receive packet with different CR and packet parameters in explicit header mode
+print("Set packet parameters:\n\tExplicit header type\n\tPreamble length = 12\n\tPayload Length = 15\n\tCRC on")
+LoRa.setHeaderType(LoRa.HEADER_EXPLICIT)                        # Explicit header mode
+LoRa.setPreambleLength(12)                                      # Set preamble length to 12
+LoRa.setPayloadLength(15)                                       # Initialize payloadLength to 15
+LoRa.setCrcEnable(True)                                         # Set CRC enable
 
-# Cleanup
-BOARD.teardown()
+# Set syncronize word for public network (0x34)
+print("Set syncronize word to 0x34")
+LoRa.setSyncWord(0x34)
+
+print("\n-- LoRa Transmitter --\n")
+
+# Message to transmit
+message = "HeLoRa World!\0"
+messageList = list(message)
+for i in range(len(messageList)) : messageList[i] = ord(messageList[i])
+counter = 0
+
+# Transmit message continuously
+while True :
+
+    # Transmit message and counter
+    # write() method must be placed between beginPacket() and endPacket()
+    LoRa.beginPacket()
+    LoRa.write(messageList, len(messageList))
+    LoRa.write([counter], 1)
+    LoRa.endPacket()
+
+    # Print message and counter
+    print(f"{message}  {counter}")
+
+    # Wait until modulation process for transmitting packet finish
+    LoRa.wait()
+
+    # Print transmit time and data rate
+    print("Transmit time: {0:0.2f} ms | Data rate: {1:0.2f} byte/s".format(LoRa.transmitTime(), LoRa.dataRate()))
+
+    # Don't load RF module with continous transmit
+    time.sleep(5)
+    counter = (counter + 1) % 256
