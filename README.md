@@ -12,7 +12,7 @@ cd IIOT_rpi
 
 ### Make and run the script 
 ```
-chmod +x setup.sh
+sudo chmod +x setup.sh
 ./setup.sh
 ```
 
