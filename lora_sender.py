@@ -1,71 +1,45 @@
-from LoRaRF import SX127x, LoRaSpi, LoRaGpio
+import spidev
+import RPi.GPIO as GPIO
 import time
 
-# Begin LoRa radio with connected SPI bus and IO pins (cs and reset) on GPIO
-# SPI is defined by bus ID and cs ID and IO pins defined by chip and offset number
-spi = LoRaSpi(0, 0)
-cs = LoRaGpio(0, 8)
-reset = LoRaGpio(0, 24)
-LoRa = SX127x(spi, cs, reset)
-print("Begin LoRa radio")
-if not LoRa.begin() :
-    raise Exception("Something wrong, can't begin LoRa radio")
+# Define LoRa pins
+DIO0 = 24   # LoRa DIO0
+NSS = 8     # SPI Chip Select (CE0)
+RESET = 25  # Reset pin
 
-# Set frequency to 915 Mhz
-print("Set frequency to 915 Mhz")
-LoRa.setFrequency(915000000)
+# Setup GPIO
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(DIO0, GPIO.IN)
+GPIO.setup(NSS, GPIO.OUT)
+GPIO.setup(RESET, GPIO.OUT)
 
-# Set TX power, this function will set PA config with optimal setting for requested TX power
-print("Set TX power to +17 dBm")
-LoRa.setTxPower(17, LoRa.TX_POWER_PA_BOOST)                     # TX power +17 dBm using PA boost pin
+# SPI Setup
+spi = spidev.SpiDev()
+spi.open(0, 0)  # Open SPI bus 0, device 0 (CE0)
+spi.max_speed_hz = 5000000  # Set speed for the SPI bus
 
-# Configure modulation parameter including spreading factor (SF), bandwidth (BW), and coding rate (CR)
-# Receiver must have same SF and BW setting with transmitter to be able to receive LoRa packet
-print("Set modulation parameters:\n\tSpreading factor = 7\n\tBandwidth = 125 kHz\n\tCoding rate = 4/5")
-LoRa.setSpreadingFactor(7)                                      # LoRa spreading factor: 7
-LoRa.setBandwidth(125000)                                       # Bandwidth: 125 kHz
-LoRa.setCodeRate(5)                                             # Coding rate: 4/5
+# Reset LoRa Module
+GPIO.output(RESET, GPIO.HIGH)
+time.sleep(0.01)
+GPIO.output(RESET, GPIO.LOW)
+time.sleep(0.01)
 
-# Configure packet parameter including header type, preamble length, payload length, and CRC type
-# The explicit packet includes header contain CR, number of byte, and CRC type
-# Receiver can receive packet with different CR and packet parameters in explicit header mode
-print("Set packet parameters:\n\tExplicit header type\n\tPreamble length = 12\n\tPayload Length = 15\n\tCRC on")
-LoRa.setHeaderType(LoRa.HEADER_EXPLICIT)                        # Explicit header mode
-LoRa.setPreambleLength(12)                                      # Set preamble length to 12
-LoRa.setPayloadLength(15)                                       # Initialize payloadLength to 15
-LoRa.setCrcEnable(True)                                         # Set CRC enable
+# Function to send a message
+def send_message(message):
+    GPIO.output(NSS, GPIO.LOW)  # Activate chip select
+    # Write the message byte-by-byte
+    spi.xfer2([ord(c) for c in message])
+    GPIO.output(NSS, GPIO.HIGH)  # Deactivate chip select
+    print(f"Sent message: {message}")
 
-# Set syncronize word for public network (0x34)
-print("Set syncronize word to 0x34")
-LoRa.setSyncWord(0x34)
+try:
+    while True:
+        send_message("Hello, LoRa!")
+        time.sleep(5)
 
-print("\n-- LoRa Transmitter --\n")
+except KeyboardInterrupt:
+    print("Transmission stopped by user.")
 
-# Message to transmit
-message = "HeLoRa World!\0"
-messageList = list(message)
-for i in range(len(messageList)) : messageList[i] = ord(messageList[i])
-counter = 0
-
-# Transmit message continuously
-while True :
-
-    # Transmit message and counter
-    # write() method must be placed between beginPacket() and endPacket()
-    LoRa.beginPacket()
-    LoRa.write(messageList, len(messageList))
-    LoRa.write([counter], 1)
-    LoRa.endPacket()
-
-    # Print message and counter
-    print(f"{message}  {counter}")
-
-    # Wait until modulation process for transmitting packet finish
-    LoRa.wait()
-
-    # Print transmit time and data rate
-    print("Transmit time: {0:0.2f} ms | Data rate: {1:0.2f} byte/s".format(LoRa.transmitTime(), LoRa.dataRate()))
-
-    # Don't load RF module with continous transmit
-    time.sleep(5)
-    counter = (counter + 1) % 256
+finally:
+    GPIO.cleanup()
+    spi.close()
