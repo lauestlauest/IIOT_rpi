@@ -1,25 +1,27 @@
 IOT-CO2
 =======
-### install git 
+This guide covers the setup for a Raspberry Pi project that uses LoRa (SX1278) and MQTT to communicate sensor data or other IoT-related data. This setup will allow your Raspberry Pi to send and receive LoRa messages and publish/subscribe to an MQTT broker.
+
+### install git & clone & cd 
+```
 sudo apt install git
-
-### Clone the Git repository
 git clone https://github.com/lauestlauest/IIOT_rpi.git
-
-### Navigate into the cloned repository directory
 cd IIOT_rpi
 
-### Make the script executable
+```
+
+### Make and run the script 
+```
 chmod +x setup.sh
-
-### Run the script
 ./setup.sh
+```
 
-### fix serial
-
+### fix serial !Not Done! 
+```
 sudo raspi-config
-
+```
 Navigate to Interfacing Options → Serial and enable it. When asked if you want a login shell to be accessible over serial, select No. This allows your program to access the serial interface.
+
 
 ### Activate the virtual environment
 source $HOME/rpi_mqtt_venv/bin/activate
