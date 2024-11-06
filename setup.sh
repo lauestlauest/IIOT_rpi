@@ -22,8 +22,8 @@ echo "Activating the virtual environment..."
 source $VENV_DIR/bin/activate
 
 # Install paho-mqtt in the virtual environment
-echo "Installing paho-mqtt in the virtual environment..."
-pip install paho-mqtt
+echo "Installing paho-mqtt and spidev in the virtual environment..."
+pip install paho-mqtt spidev
 
 # Check if RPi.GPIO is available from the system packages
 if python3 -c "import RPi.GPIO" &> /dev/null; then
