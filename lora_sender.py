@@ -30,5 +30,13 @@ class LoRaSender(LoRa):
 lora = LoRaSender(verbose=False)
 lora.start()
 
+try:
+    while True:
+        lora.write_payload(b'Hello, LoRa!')
+        print(f"Message sent: {'Hello, LoRa!'}")
+        time.sleep(20)  # Wait for 20 seconds before sending the next message
+except KeyboardInterrupt:
+    print("Stopping...")
+
 # Cleanup
 BOARD.teardown()
