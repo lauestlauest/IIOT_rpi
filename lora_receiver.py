@@ -6,8 +6,6 @@ from time import sleep
 # Initialize the board
 BOARD.setup()
 
-lora.set_pa_config(pa_select=1)
-
 class LoRaReceiver(LoRa):
     def __init__(self, verbose=False):
         super(LoRaRcvCont, self).__init__(verbose)
@@ -32,7 +30,13 @@ class LoRaReceiver(LoRa):
         self.reset_ptr_rx()
         self.set_mode(MODE.RXCONT)
 
+lora = LoRaReceiver(verbose=False)
+
+lora.set_pa_config(pa_select=1)
+
+
 # Instantiate and start receiving
+
 try:
     lora.start()
 except KeyboardInterrupt:
