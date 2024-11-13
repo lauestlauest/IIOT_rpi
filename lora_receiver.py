@@ -8,7 +8,7 @@ BOARD.setup()
 
 class LoRaReceiver(LoRa):
     def __init__(self, verbose=False):
-        super(LoRaRcvCont, self).__init__(verbose)
+        super(LoRaReceiver, self).__init__(verbose)
         self.set_mode(MODE.SLEEP)
         self.set_dio_mapping([0] * 6)
 
