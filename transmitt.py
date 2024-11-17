@@ -49,6 +49,9 @@ def sx1278_init():
 # Function to send a packet
 def send_packet(value):
     write_register(0x01, 0x80 | 0x01)  # Set to standby mode
+
+    write_register(0x12, 0x08)  # Clear the TxDone flag
+    
     write_register(0x0D, 0x00)  # Set FIFO address pointer
 
     # payload = [value]  # Payload to transmit
@@ -73,9 +76,10 @@ def send_packet(value):
 # Main Function
 def main():
     sx1278_init()
+    val = 0
     print("LoRa Transmitter started")
     while True:
-        val = 69  # Example value to send / nice
+        val += 1  # Example value to send / nice
         send_packet(val)
         print(f"Sent: {val}")
         time.sleep(1)  # Transmit every 1 second
