@@ -29,6 +29,7 @@ REG_IRQ_FLAGS_MASK = 0x11
 REG_FRF_MSB = 0x06
 REG_FRF_MID = 0x07
 REG_FRF_LSB = 0x08
+REG_MODEM_CONFIG_2 = 0x1E
 
 # Reset LoRa Module
 GPIO.output(RESET, GPIO.HIGH)
@@ -48,6 +49,12 @@ def read_register(register):
     response = spi.xfer2([register & 0x7F, 0x00])
     GPIO.output(NSS, GPIO.HIGH)
     return response[1]
+
+def enable_crc():
+    config = read_register(REG_MODEM_CONFIG_2)
+    config |= (1 << 2)  # Set bit 2 to 1
+    write_register(REG_MODEM_CONFIG_2, config)
+    print("CRC enabled")
 
 # Setup LoRa transmitter mode
 def setup_transmitter():
@@ -97,6 +104,7 @@ def send_message(message):
 # Initialize and start the transmitter
 setup_transmitter()
 set_frequency_to_433mhz()
+enable_crc()
 
 try:
     while True:

@@ -130,6 +130,7 @@ REG_PAYLOAD_LENGTH = 0x22
 REG_FRF_MSB = 0x06
 REG_FRF_MID = 0x07
 REG_FRF_LSB = 0x08
+REG_MODEM_CONFIG_2 = 0x1E
 
 # Reset LoRa Module
 GPIO.output(RESET, GPIO.HIGH)
@@ -149,6 +150,12 @@ def read_register(register):
     response = spi.xfer2([register & 0x7F, 0x00])
     GPIO.output(NSS, GPIO.HIGH)
     return response[1]
+
+def enable_crc():
+    config = read_register(REG_MODEM_CONFIG_2)
+    config |= (1 << 2)  # Set bit 2 to 1
+    write_register(REG_MODEM_CONFIG_2, config)
+    print("CRC enabled")
 
 def set_frequency_to_433mhz():
     # FRF value for 433 MHz: 0x6C4000
@@ -197,6 +204,7 @@ def check_for_message():
 # Initialize and start the receiver
 setup_receiver()
 set_frequency_to_433mhz()
+enable_crc()
 
 try:
     while True:
