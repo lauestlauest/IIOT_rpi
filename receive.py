@@ -52,9 +52,9 @@ def read_packet():
 
         packet = []
         packet_length = read_register(0x13)  # Length of the packet
-        for _ in range(packet_length):
-            packet.append(read_register(0x00))  # Read from FIFO
-
+        # for _ in range(packet_length):
+        #     packet.append(read_register(0x00))  # Read from FIFO
+        packet = read_register(0x00)
         rssi = read_register(0x1A) - 157  # Calculate RSSI
         return packet, rssi
     return None, None
