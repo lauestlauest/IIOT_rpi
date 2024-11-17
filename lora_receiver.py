@@ -156,25 +156,30 @@ def setup_receiver():
     # Clear the IRQ register
     write_register(REG_IRQ_FLAGS, 0xFF)
     print("Receiver mode set.")
+    write_register(REG_PAYLOAD_LENGTH, 0xFF)
 
 # Check for incoming message
 def check_for_message():
     irq_flags = read_register(REG_IRQ_FLAGS)
     if irq_flags & 0x40:  # Check if RX_DONE flag is set
         print("Message received!")
-        # Clear IRQ flags
-        write_register(REG_IRQ_FLAGS, 0xFF)
+        
+        # Clear the RX_DONE flag
+        write_register(REG_IRQ_FLAGS, 0x40)  # Only clear the RX_DONE flag
         
         # Read the RX buffer
         write_register(REG_FIFO_ADDR_PTR, read_register(REG_FIFO_RX_CURRENT_ADDR))
         
         # Retrieve message from FIFO
         payload_length = read_register(REG_PAYLOAD_LENGTH)
-        message = []
-        for i in range(payload_length):
-            message.append(chr(read_register(REG_FIFO)))
-        
-        print("Received message: " + ''.join(message))
+        if payload_length > 0:  # Ensure length is greater than zero
+            message = []
+            for _ in range(payload_length):
+                message.append(chr(read_register(REG_FIFO)))
+            
+            print("Received message: " + ''.join(message))
+        else:
+            print("Received empty message.")
     else:
         print("No message received.")
 
