@@ -69,11 +69,12 @@ def main():
     while True:
         packet, rssi = read_packet()
         if packet:
-            in_string = "".join(chr(byte) for byte in packet)
-            try:
-                val = int(in_string)
-            except ValueError:
-                val = 0
+            val = packet
+            # in_string = "".join(chr(byte) for byte in packet)
+            # try:
+            #     val = int(in_string)
+            # except ValueError:
+            #     val = 0
 
             print(f"Received: {val}, RSSI: {rssi}")
 
