@@ -131,6 +131,10 @@ REG_FRF_MSB = 0x06
 REG_FRF_MID = 0x07
 REG_FRF_LSB = 0x08
 REG_MODEM_CONFIG_2 = 0x1E
+REG_MODEM_CONFIG_1 = 0x1D
+REG_MODEM_CONFIG_2 = 0x1E
+REG_SYNC_WORD = 0x39
+REG_INVERT_IQ = 0x33
 
 # Reset LoRa Module
 GPIO.output(RESET, GPIO.HIGH)
@@ -151,6 +155,29 @@ def read_register(register):
     GPIO.output(NSS, GPIO.HIGH)
     return response[1]
 
+def set_spreading_factor(sf):
+    if sf < 6 or sf > 12:
+        raise ValueError("Spreading factor must be between 6 and 12")
+    config = read_register(REG_MODEM_CONFIG_2) & 0x0F  # Clear bits 7-4
+    config |= (sf << 4)  # Set spreading factor
+    write_register(REG_MODEM_CONFIG_2, config)
+    print(f"Spreading Factor set to {sf}")
+
+# Function to set bandwidth
+def set_bandwidth(bw):
+    bw_values = {125000: 0x70, 250000: 0x80, 500000: 0x90}
+    if bw not in bw_values:
+        raise ValueError("Invalid bandwidth. Use 125000, 250000, or 500000 Hz")
+    config = read_register(REG_MODEM_CONFIG_1) & 0x0F  # Clear bits 7-4
+    config |= bw_values[bw]  # Set bandwidth
+    write_register(REG_MODEM_CONFIG_1, config)
+    print(f"Bandwidth set to {bw} Hz")
+
+# Function to set sync word
+def set_sync_word(sync_word):
+    write_register(REG_SYNC_WORD, sync_word)
+    print(f"Sync Word set to {hex(sync_word)}")
+
 def enable_crc():
     config = read_register(REG_MODEM_CONFIG_2)
     config |= (1 << 2)  # Set bit 2 to 1
@@ -169,6 +196,11 @@ def setup_receiver():
     # Set to standby mode first
     write_register(REG_OP_MODE, 0x01)
     time.sleep(0.1)
+    set_frequency_to_433mhz()
+    enable_crc()
+    set_spreading_factor(7)  # Set SF to 7
+    set_bandwidth(125000)    # Set bandwidth to 125 kHz
+    set_sync_word(0x30)
     # Set to LoRa receive continuous mode
     write_register(REG_OP_MODE, 0x85)
     # Clear the IRQ register
@@ -203,8 +235,6 @@ def check_for_message():
 
 # Initialize and start the receiver
 setup_receiver()
-set_frequency_to_433mhz()
-enable_crc()
 
 try:
     while True:
