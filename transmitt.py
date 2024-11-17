@@ -46,7 +46,7 @@ def main():
     sx1278_init()
     print("LoRa Transmitter started")
     while True:
-        val = int(255 * GPIO.input(17) / 1024.0)  # Example of reading a value
+        val = 112  # Example of reading a value
         send_packet(val)
         time.sleep(0.05)
 
