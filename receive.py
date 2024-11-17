@@ -30,39 +30,34 @@ def sx1278_init():
     write_register(0x07, 0x80)
     write_register(0x08, 0x00)
 
-    #base adresses
-    write_register(0x0E, 0x00)
-    write_register(0x0F, 0x00)
+    # Set base addresses
+    write_register(0x0E, 0x00)  # FIFO Tx base address
+    write_register(0x0F, 0x00)  # FIFO Rx base address
 
-    #set LNA boost
+    # Set LNA boost
     write_register(0x0C, read_register(0x0C) | 0x03)
 
-    #set auto AGC
+    # Set auto AGC
     write_register(0x26, 0x04)
 
-    write_register(0x4D, 0x84)
+    write_register(0x4D, 0x84)  # Set PA ramp-up time
     write_register(0x09, 0x80 | 0x0F)  # Maximum output power
 
-    write_register(0x01, 0x80 | 0x01)  # Set to standby mode
+    write_register(0x01, 0x80 | 0x05)  # Set to continuous receive mode
 
 def read_packet():
     if read_register(0x12) & 0x40:  # Check if there's a received packet
-        write_register(0x12, 0x40)  # Clear the flag
-        write_register(0x0D, 0)  # Set FIFO address
-        write_register(0x01, 0x80|0x06)
+        write_register(0x12, 0x40)  # Clear the RX done flag
+        write_register(0x0D, 0x00)  # Set FIFO address to read
+
         packet = []
-        for _ in range(read_register(0x13)):  # Read the length of the packet
+        packet_length = read_register(0x13)  # Length of the packet
+        for _ in range(packet_length):
             packet.append(read_register(0x00))  # Read from FIFO
 
         rssi = read_register(0x1A) - 157  # Calculate RSSI
         return packet, rssi
     return None, None
-
-def parsePacket(size):
-    irqFlags = read_packet(0x12)
-    write_register(0x1D, read_register(0x1D & 0xFE))
-    write_register(0x12, irqFlags)
-
 
 # Main Function
 def main():
