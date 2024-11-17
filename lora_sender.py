@@ -17,6 +17,8 @@ GPIO.setup(RESET, GPIO.OUT)
 spi = spidev.SpiDev()
 spi.open(0, 0)  # Open SPI bus 0, device 0 (CE0)
 spi.max_speed_hz = 1000000    # Set speed for the SPI bus
+spi.mode = 0  # Set SPI mode to 0
+
 
 # LoRa Register Addresses
 REG_FIFO = 0x00
