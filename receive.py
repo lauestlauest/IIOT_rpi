@@ -25,12 +25,24 @@ def read_register(register):
 
 # SX1278 Initialization
 def sx1278_init():
-    write_register(0x01, 0x81)  # Set to sleep mode to configure
+    write_register(0x01, 0x80 | 0x00)  # Set to sleep mode to configure
     write_register(0x06, 0x6C)  # Set frequency to 433 MHz
     write_register(0x07, 0x80)
     write_register(0x08, 0x00)
+
+    #base adresses
+    write_register(0x0E, 0x00)
+    write_register(0x0F, 0x00)
+
+    #set LNA boost
+    write_register(0x0C, read_register(0x0C) | 0x03)
+
+    #set auto AGC
+    write_register(0x26, 0x04)
+
     write_register(0x09, 0xFF)  # Maximum output power
-    write_register(0x01, 0x85)  # Set to receive mode
+
+    write_register(0x01, 0x80 | 0x01)  # Set to standby mode
 
 def read_packet():
     if read_register(0x12) & 0x40:  # Check if there's a received packet
