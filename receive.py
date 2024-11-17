@@ -45,7 +45,7 @@ def sx1278_init():
 
     write_register(0x01, 0x80 | 0x05)  # Set to continuous receive mode
 
-    write_register(0x01, 0x80 | 0x01)  # Set to standby mode
+    # write_register(0x01, 0x80 | 0x01)  # Set to standby mode
 
 def read_packet():
     if read_register(0x12) & 0x40:  # Check if there's a received packet

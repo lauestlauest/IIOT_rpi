@@ -70,7 +70,7 @@ def send_packet(value):
         time.sleep(0.01)  # Check for the TxDone flag
 
     write_register(0x12, 0x08)  # Clear the TxDone flag
-    write_register(0x01, 0x80 | 0x01)  # Set back to standby mode
+    # write_register(0x01, 0x80 | 0x01)  # Set back to standby mode
 
 
 # Main Function
