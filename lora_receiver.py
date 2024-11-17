@@ -53,6 +53,11 @@ def read_register(register):
     GPIO.output(NSS, GPIO.HIGH)
     return response[1]
 
+# Function to set sync word
+def set_sync_word(sync_word):
+    write_register(REG_SYNC_WORD, sync_word)
+    print(f"Sync Word set to {hex(sync_word)}")
+
 # Setup LoRa receiver mode
 def setup_receiver():
     # Set to standby mode first
