@@ -47,8 +47,8 @@ def sx1278_init():
 def read_packet():
     if read_register(0x12) & 0x40:  # Check if there's a received packet
         write_register(0x12, 0x40)  # Clear the flag
-        write_register(0x0D, 0x00)  # Set FIFO address
-
+        write_register(0x0D, 0)  # Set FIFO address
+        write_register(0x01, 0x80|0x06)
         packet = []
         for _ in range(read_register(0x13)):  # Read the length of the packet
             packet.append(read_register(0x00))  # Read from FIFO
@@ -56,6 +56,12 @@ def read_packet():
         rssi = read_register(0x1A) - 157  # Calculate RSSI
         return packet, rssi
     return None, None
+
+def parsePacket(size):
+    irqFlags = read_packet(0x12)
+    write_register(0x1D, read_register(0x1D & 0xFE))
+    write_register(0x12, irqFlags)
+
 
 # Main Function
 def main():
