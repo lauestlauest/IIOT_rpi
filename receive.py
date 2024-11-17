@@ -50,8 +50,8 @@ def read_packet():
         write_register(0x12, 0x40)  # Clear the RX done flag
         write_register(0x0D, 0x00)  # Set FIFO address to read
 
-        packet = []
-        packet_length = read_register(0x13)  # Length of the packet
+        # packet = []
+        # packet_length = read_register(0x13)  # Length of the packet
         # for _ in range(packet_length):
         #     packet.append(read_register(0x00))  # Read from FIFO
         packet = read_register(0x00)
