@@ -84,28 +84,21 @@ def set_frequency_to_433mhz():
 
 # Function to check and read a received message
 def check_for_message():
-    irq_flags = read_register(REG_IRQ_FLAGS)
-    print("irq flags = ")
-    print(irq_flags)
-    
-    if irq_flags & 0x40:  # Check if RX_DONE flag is set
-        print("Message received!")
-        # Clear IRQ flags
-        write_register(REG_IRQ_FLAGS, 0xFF)
+    print("Message received!")
+    # Clear IRQ flags
+    write_register(REG_IRQ_FLAGS, 0xFF)
         
-        # Set the FIFO pointer to the current RX address
-        write_register(REG_FIFO_ADDR_PTR, read_register(REG_FIFO_RX_BASE_ADDR))
+    # Set the FIFO pointer to the current RX address
+    write_register(REG_FIFO_ADDR_PTR, read_register(REG_FIFO_RX_BASE_ADDR))
         
-        # Retrieve message from FIFO
-        payload_length = read_register(REG_PAYLOAD_LENGTH)
-        message = []
+    # Retrieve message from FIFO
+    payload_length = read_register(REG_PAYLOAD_LENGTH)
+    message = []
         
-        for i in range(payload_length):
-            message.append(chr(read_register(REG_FIFO)))
+    for i in range(payload_length):
+        message.append(chr(read_register(REG_FIFO)))
         
-        print("Received message: " + ''.join(message))
-    else:
-        print("No message received.")
+    print("Received message: " + ''.join(message))
 
 # Initialize and start the receiver
 setup_receiver()
