@@ -21,6 +21,7 @@ spi.max_speed_hz = 1000000    # Set speed for the SPI bus
 # LoRa Register Addresses
 REG_FIFO = 0x00
 REG_OP_MODE = 0x01
+REG_FIFO_ADDR_PTR = 0x0D  # Address to point to FIFO
 REG_FIFO_TX_BASE_ADDR = 0x0E
 REG_PAYLOAD_LENGTH = 0x22
 REG_IRQ_FLAGS = 0x12
@@ -31,7 +32,6 @@ REG_FRF_MID = 0x07
 REG_FRF_LSB = 0x08
 REG_MODEM_CONFIG_2 = 0x1E
 REG_MODEM_CONFIG_1 = 0x1D
-REG_MODEM_CONFIG_2 = 0x1E
 REG_SYNC_WORD = 0x39
 REG_INVERT_IQ = 0x33
 
@@ -95,8 +95,7 @@ def setup_transmitter():
     set_bandwidth(125000)    # Set bandwidth to 125 kHz
     set_sync_word(0x30)
     # Set FIFO base address for TX
-    write_register(REG_FIFO_TX_BASE_ADDR, 0x00)
-    write_register(REG_PAYLOAD_LENGTH, 0x00)  # Initialize payload length
+    write_register(REG_FIFO_ADDR_PTR, REG_FIFO_TX_BASE_ADDR)
     print("Transmitter mode set.")
 
 def set_frequency_to_433mhz():
@@ -111,19 +110,19 @@ def send_message(message):
     # Clear IRQ flags
     write_register(REG_IRQ_FLAGS, 0xFF)
     
-    # Set payload length
+    # Set payload length (set this before sending data)
     write_register(REG_PAYLOAD_LENGTH, len(message))
     
-    # Set FIFO pointer to base address
-    write_register(REG_FIFO, 0x00)
+    # Set FIFO pointer to base address (set to start of FIFO)
+    write_register(REG_FIFO_ADDR_PTR, REG_FIFO_TX_BASE_ADDR)
     
-    # Write message to FIFO
+    # Write message to FIFO (write byte by byte)
     GPIO.output(NSS, GPIO.LOW)
     spi.xfer2([REG_FIFO | 0x80] + [ord(c) for c in message])
     GPIO.output(NSS, GPIO.HIGH)
     
     # Set to transmit mode
-    write_register(REG_OP_MODE, 0x83)  # TX mode
+    write_register(REG_OP_MODE, 0x83)  # TX mode (LoRa, Transmit)
     print(f"Sent message: {message}")
     
     # Clear IRQ flags again
