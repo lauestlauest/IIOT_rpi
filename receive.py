@@ -56,6 +56,7 @@ def read_packet():
         #     packet.append(read_register(0x00))  # Read from FIFO
         packet = read_register(0x00)
         rssi = read_register(0x1A) - 157  # Calculate RSSI
+        write_register(0x12, 0x40)  # Clear the RX done flag
         return packet, rssi
     return None, None
 
