@@ -40,7 +40,8 @@ def sx1278_init():
     #set auto AGC
     write_register(0x26, 0x04)
 
-    write_register(0x09, 0xFF)  # Maximum output power
+    write_register(0x4D, 0x84)
+    write_register(0x09, 0x80 | 0x0F)  # Maximum output power
 
     write_register(0x01, 0x80 | 0x01)  # Set to standby mode
 
@@ -80,7 +81,6 @@ def main():
                 val = 0
 
             print(f"Received: {val}, RSSI: {rssi}")
-            GPIO.output(18, GPIO.HIGH if val > 0 else GPIO.LOW)  # Control LED based on received value
 
         time.sleep(0.1)
 
