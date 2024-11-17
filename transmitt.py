@@ -76,7 +76,7 @@ def main():
     val = 69  # Example value to send / nice
     print("LoRa Transmitter started")
     while True:
-        val =+ 1  # Example value to send / nice
+        val += 1  # Example value to send / nice
         send_packet(val)
         print(f"Sent: {val}")
         time.sleep(1)  # Transmit every 1 second
