@@ -56,8 +56,8 @@ def send_packet(value):
     write_register(0x22, payload_length)  # Set payload length
 
     # Write payload to FIFO
-    for byte in payload:
-        write_register(0x00, byte)
+    # for byte in payload:
+    write_register(0x00, value)
 
     # Set to transmit mode
     write_register(0x01, 0x80 | 0x03)
