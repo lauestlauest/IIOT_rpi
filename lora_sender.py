@@ -126,10 +126,6 @@ def send_message(message):
     write_register(REG_OP_MODE, 0x83)  # TX mode
     print(f"Sent message: {message}")
     
-    # Wait for transmission to complete
-    while GPIO.input(DIO0) == 0:
-        time.sleep(0.01)  # Wait until DIO0 goes high
-
     # Clear IRQ flags again
     write_register(REG_IRQ_FLAGS, 0xFF)
 
