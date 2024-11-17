@@ -85,6 +85,8 @@ def set_frequency_to_433mhz():
 # Function to check and read a received message
 def check_for_message():
     irq_flags = read_register(REG_IRQ_FLAGS)
+    print("irq flags = ")
+    print(irq_flags)
     
     if irq_flags & 0x40:  # Check if RX_DONE flag is set
         print("Message received!")
