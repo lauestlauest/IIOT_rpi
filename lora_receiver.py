@@ -108,6 +108,7 @@ DIO0 = 24   # LoRa DIO0 for interrupt handling (message received)
 NSS = 8     # SPI Chip Select (CE0)
 RESET = 25  # Reset pin
 
+
 # Setup GPIO
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(DIO0, GPIO.IN)
@@ -117,7 +118,7 @@ GPIO.setup(RESET, GPIO.OUT)
 # SPI Setup
 spi = spidev.SpiDev()
 spi.open(0, 0)  # Open SPI bus 0, device 0 (CE0)
-spi.max_speed_hz = 5000000  # Set speed for the SPI bus
+spi.max_speed_hz = 1000000    # Set speed for the SPI bus
 
 # LoRa Register Addresses (these may need adjusting based on SX1278 configuration)
 REG_FIFO = 0x00  # FIFO register for reading received data
@@ -126,6 +127,9 @@ REG_IRQ_FLAGS = 0x12
 REG_FIFO_RX_CURRENT_ADDR = 0x10
 REG_FIFO_ADDR_PTR = 0x0D
 REG_PAYLOAD_LENGTH = 0x22
+REG_FRF_MSB = 0x06
+REG_FRF_MID = 0x07
+REG_FRF_LSB = 0x08
 
 # Reset LoRa Module
 GPIO.output(RESET, GPIO.HIGH)
@@ -145,6 +149,13 @@ def read_register(register):
     response = spi.xfer2([register & 0x7F, 0x00])
     GPIO.output(NSS, GPIO.HIGH)
     return response[1]
+
+def set_frequency_to_433mhz():
+    # FRF value for 433 MHz: 0x6C4000
+    write_register(REG_FRF_MSB, 0x6C)  # MSB
+    write_register(REG_FRF_MID, 0x40)  # MID
+    write_register(REG_FRF_LSB, 0x00)  # LSB
+    print("Frequency set to 433 MHz")
 
 # Setup LoRa receiver mode
 def setup_receiver():
@@ -185,6 +196,7 @@ def check_for_message():
 
 # Initialize and start the receiver
 setup_receiver()
+set_frequency_to_433mhz()
 
 try:
     while True:

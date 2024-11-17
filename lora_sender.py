@@ -16,7 +16,7 @@ GPIO.setup(RESET, GPIO.OUT)
 # SPI Setup
 spi = spidev.SpiDev()
 spi.open(0, 0)  # Open SPI bus 0, device 0 (CE0)
-spi.max_speed_hz = 5000000  # Set speed for the SPI bus
+spi.max_speed_hz = 1000000    # Set speed for the SPI bus
 
 # LoRa Register Addresses
 REG_FIFO = 0x00
@@ -26,6 +26,9 @@ REG_PAYLOAD_LENGTH = 0x22
 REG_IRQ_FLAGS = 0x12
 REG_DIO_MAPPING_1 = 0x40
 REG_IRQ_FLAGS_MASK = 0x11
+REG_FRF_MSB = 0x06
+REG_FRF_MID = 0x07
+REG_FRF_LSB = 0x08
 
 # Reset LoRa Module
 GPIO.output(RESET, GPIO.HIGH)
@@ -57,6 +60,13 @@ def setup_transmitter():
     write_register(REG_PAYLOAD_LENGTH, 0x00)  # Initialize payload length
     print("Transmitter mode set.")
 
+def set_frequency_to_433mhz():
+    # FRF value for 433 MHz: 0x6C4000
+    write_register(REG_FRF_MSB, 0x6C)  # MSB
+    write_register(REG_FRF_MID, 0x40)  # MID
+    write_register(REG_FRF_LSB, 0x00)  # LSB
+    print("Frequency set to 433 MHz")
+
 # Function to send a message
 def send_message(message):
     # Clear IRQ flags
@@ -86,6 +96,7 @@ def send_message(message):
 
 # Initialize and start the transmitter
 setup_transmitter()
+set_frequency_to_433mhz()
 
 try:
     while True:
