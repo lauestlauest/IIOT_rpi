@@ -39,7 +39,7 @@ try:
                         "temperature": int(parts[2]), 
                         "co2" : int(parts[1]), 
                         "humidity": int(parts[3]) }]
-            client.publish(TOPIC, message)
+            client.publish(TOPIC, message.ToString())
             print(f"Message sent: {message}")
             time.sleep(20)  # Wait for 20 seconds before sending the next message
 except KeyboardInterrupt:
