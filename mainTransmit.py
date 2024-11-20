@@ -78,7 +78,7 @@ def main():
     co2_sensor = CO2SensorDriver()
     # co2_sensor.get_co2_temp_humidity()
 
-    ID = 0x01  # Node
+    ID = 1  # Node
 
     # message = "Hello suckers!"  # Example value to send / nice
     # payload = [ord(c) for c in message]
@@ -86,7 +86,7 @@ def main():
     while True:
         data = co2_sensor.get_co2_temp_humidity()
         if data:
-            package = [ID] + data
+            package = [ID] + list(data)
             send_packet(package)
             print(f"Sent: {package}")
            
