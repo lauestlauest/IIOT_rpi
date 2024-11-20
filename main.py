@@ -35,11 +35,8 @@ try:
         if packet:
             decoded_packet = ''.join([chr(byte) for byte in packet])
             parts = decoded_packet.split(";")
-            message = [{"name": str(parts[0]),
-                        "temperature": int(parts[2]), 
-                        "co2" : int(parts[1]), 
-                        "humidity": int(parts[3]) }]
-            client.publish(TOPIC, message.ToString())
+            message = f'[{{"name":"{str(parts[0])}","temperature":{int(parts[2])},"co2":{int(parts[1])},"humidity":{int(parts[3])}}}]'
+            client.publish(TOPIC, message)
             print(f"Message sent: {message}")
             time.sleep(20)  # Wait for 20 seconds before sending the next message
 except KeyboardInterrupt:
