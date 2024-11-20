@@ -31,6 +31,7 @@ if [ -f "$VENV_DIR/bin/activate" ]; then
     pip install paho-mqtt spidev
     pip install SX127x
     pip install pyLora
+    pip install smbus2
 
     # Check if RPi.GPIO is available from system packages
     if python3 -c "import RPi.GPIO" &> /dev/null; then
