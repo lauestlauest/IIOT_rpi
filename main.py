@@ -30,8 +30,8 @@ lora = LoraReceiver()
 # Loop to send messages every 20 seconds
 try:
     while True:
-        #packet, rssi = lora.read_packet()
-        packet = [49, 59, 57, 56, 54, 59, 50, 53, 59, 51, 50]
+        packet, rssi = lora.read_packet()
+        #packet = [49, 59, 57, 56, 54, 59, 50, 53, 59, 51, 50]
         if packet:
             decoded_packet = ''.join([chr(byte) for byte in packet])
             parts = decoded_packet.split(";")
@@ -41,7 +41,7 @@ try:
             time.sleep(20)  # Wait for 20 seconds before sending the next message
 except KeyboardInterrupt:
     print("Stopping...")
-    # lora.close()
+    lora.close()
 
 # Stop the loop and disconnect from the broker
 client.loop_stop()
