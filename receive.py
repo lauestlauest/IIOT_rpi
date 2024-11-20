@@ -66,7 +66,7 @@ class LoraReceiver:
             return packet, rssi
         return None, None
     def close(self):
-        self.spi.close()
+        spi.close()
         GPIO.cleanup()
 
 # Main Function
