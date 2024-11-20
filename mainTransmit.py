@@ -73,26 +73,38 @@ def send_packet(payload):
 
 
 # Main Function
+# def main():
+#     sx1278_init()
+#     co2_sensor = CO2SensorDriver()
+#     # co2_sensor.get_co2_temp_humidity()
+
+#     ID = 1  # Node
+
+#     message = "Hello suckers!"  # Example value to send / nice
+#     payload = [ord(c) for c in message]
+#     print("LoRa Transmitter started")
+#     while True:
+#         # data = co2_sensor.get_co2_temp_humidity()
+#         # if data:
+#         #     # Combine ID with sensor data, converting each value to its string form
+#         #     package = [str(ID)] + [str(int(value)) for value in data]  # Convert to strings
+#         #     # Flatten package into characters and get their ASCII values
+#         #     payload = [ord(char) for item in package for char in item]
+#             send_packet(payload)
+#             # print(f"Sent: {package}, Payload: {payload}")
+#             time.sleep(1)
+
+# Main Function
 def main():
     sx1278_init()
-    co2_sensor = CO2SensorDriver()
-    # co2_sensor.get_co2_temp_humidity()
-
-    ID = 1  # Node
-
     message = "Hello suckers!"  # Example value to send / nice
     payload = [ord(c) for c in message]
     print("LoRa Transmitter started")
     while True:
-        # data = co2_sensor.get_co2_temp_humidity()
-        # if data:
-        #     # Combine ID with sensor data, converting each value to its string form
-        #     package = [str(ID)] + [str(int(value)) for value in data]  # Convert to strings
-        #     # Flatten package into characters and get their ASCII values
-        #     payload = [ord(char) for item in package for char in item]
-            send_packet(payload)
-            # print(f"Sent: {package}, Payload: {payload}")
-            time.sleep(1)
+        #val += 1  # Example value to send / nice
+        send_packet(payload)
+        print(f"Sent: {message}")
+        time.sleep(1)  # Transmit every 1 second
            
 
 if __name__ == "__main__":
