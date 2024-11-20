@@ -76,18 +76,13 @@ def send_packet(payload):
 def main():
     sx1278_init()
     co2_sensor = CO2SensorDriver()
-    # co2_sensor.get_co2_temp_humidity()
-
     ID = 1  # Node
 
-    # message = "Hello suckers!"  # Example value to send / nice
-    # payload = [ord(c) for c in message]
-    # print("LoRa Transmitter started")
     while True:
-        data = co2_sensor.get_co2_temp_humidity()
-        if data:
+        co2, temp, humi = co2_sensor.get_co2_temp_humidity()
+        if co2:
             # Combine ID with sensor data, converting each value to its string form
-            package = [str(ID)] + [str(int(value)) for value in data]  # Convert to strings
+            package = [str(ID)] + ";" + [str(int(co2))] + ";" + [str(int(temp))] + ";" + [str(int(humi))]  # Convert to strings
             # Flatten package into characters and get their ASCII values
             payload = [ord(char) for item in package for char in item]
             send_packet(payload)
