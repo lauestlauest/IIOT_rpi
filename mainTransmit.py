@@ -86,8 +86,10 @@ def main():
     while True:
         data = co2_sensor.get_co2_temp_humidity()
         if data:
-            package = [ID] + list(data)
-            payload = [ord(str(c)) for c in package]
+            # Combine ID with sensor data, converting each value to its string form
+            package = [str(ID)] + [str(int(value)) for value in data]  # Convert to strings
+            # Flatten package into characters and get their ASCII values
+            payload = [ord(char) for item in package for char in item]
             send_packet(payload)
             print(f"Sent: {package}, Payload: {payload}")
            
