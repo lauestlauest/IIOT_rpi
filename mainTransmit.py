@@ -80,12 +80,12 @@ def main():
 
     while True:
         co2, temp, humi = co2_sensor.get_co2_temp_humidity()
-        if co2:
-            # Combine ID with sensor data, converting each value to its string form
-            package = [str(ID)] + ";" + [str(int(co2))] + ";" + [str(int(temp))] + ";" + [str(int(humi))]  # Convert to strings
-            # Flatten package into characters and get their ASCII values
-            payload = [ord(char) for item in package for char in item]
-            send_packet(payload)
+        if co2 is not None:  # Ensure data is valid
+            # Construct the package as a single string with ';' as delimiter
+            package = f"{ID};{int(co2)};{int(temp)};{int(humi)}"
+            # Convert the package string into a list of ASCII values
+            payload = [ord(char) for char in package]
+            send_packet(payload)  # Transmit the payload
             print(f"Sent: {package}, Payload: {payload}")
            
 
