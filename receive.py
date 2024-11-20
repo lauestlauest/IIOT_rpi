@@ -47,7 +47,6 @@ def sx1278_init():
 
 def read_packet():
     if read_register(0x12) & 0x40:  # Check if there's a received packet
-        #write_register(0x12, 0x40)  # Clear the RX done flag
         write_register(0x0D, read_register(0x10))  # Set FIFO address to read
 
         packet = []
@@ -74,12 +73,6 @@ def main():
         packet, rssi = read_packet()
         if packet:
             val = packet
-            # in_string = "".join(chr(byte) for byte in packet)
-            # try:
-            #     val = int(in_string)
-            # except ValueError:
-            #     val = 0
-
             print(f"Received: {val}, RSSI: {rssi}")
 
         time.sleep(0.1)
