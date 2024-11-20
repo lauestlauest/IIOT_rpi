@@ -39,7 +39,7 @@ class LoraReceiver:
         self.write_register(0x0F, 0x00)  # FIFO Rx base address
 
         # Set LNA boost
-        self.write_register(0x0C, read_register(0x0C) | 0x03)
+        self.write_register(0x0C, self.read_register(0x0C) | 0x03)
 
         # Set auto AGC
         self.write_register(0x26, 0x04)
