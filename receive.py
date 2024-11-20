@@ -57,6 +57,7 @@ def read_packet():
         packet = read_register(0x00)
         rssi = read_register(0x1A) - 157  # Calculate RSSI
         write_register(0x12, 0x40)  # Clear the RX done flag
+        write_register(0x01, 0x80 | 0x05)  # Restart continuous receive mode
         return packet, rssi
     return None, None
 
