@@ -86,7 +86,7 @@ def main():
     while True:
         data = co2_sensor.get_co2_temp_humidity()
         if data:
-            data = [ID] + data
+            data[3] = ID
             send_packet(data)
             print(f"Sent: {data}")
            
