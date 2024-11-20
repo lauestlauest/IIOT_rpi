@@ -87,8 +87,9 @@ def main():
         data = co2_sensor.get_co2_temp_humidity()
         if data:
             package = [ID] + list(data)
-            send_packet(package)
-            print(f"Sent: {package}")
+            payload = [ord(c) for c in package]
+            send_packet(payload)
+            print(f"Sent: {package}, Payload: {payload}")
            
 
 if __name__ == "__main__":
