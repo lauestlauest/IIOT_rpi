@@ -51,13 +51,13 @@ def send_packet(value):
     write_register(0x01, 0x80 | 0x01)  # Set to standby mode
     write_register(0x0D, 0x00)  # Set FIFO address pointer
 
-    # payload = [value]  # Payload to transmit
-    # payload_length = len(payload)
-    write_register(0x22, 1)  # Set payload length
+    payload = [value]  # Payload to transmit
+    payload_length = len(payload)
+    write_register(0x22, payload_length)  # Set payload length
 
     # Write payload to FIFO
-    # for byte in payload:
-    write_register(0x00, value)
+    for byte in payload:
+        write_register(0x00, value)
 
     # Set to transmit mode
     write_register(0x01, 0x80 | 0x03)
@@ -73,10 +73,10 @@ def send_packet(value):
 # Main Function
 def main():
     sx1278_init()
-    val = 69  # Example value to send / nice
+    val = [69, 70]  # Example value to send / nice
     print("LoRa Transmitter started")
     while True:
-        val += 1  # Example value to send / nice
+        #val += 1  # Example value to send / nice
         send_packet(val)
         print(f"Sent: {val}")
         time.sleep(1)  # Transmit every 1 second
