@@ -47,8 +47,8 @@ def sx1278_init():
 
 def read_packet():
     if read_register(0x12) & 0x40:  # Check if there's a received packet
-        write_register(0x12, 0x40)  # Clear the RX done flag
-        write_register(0x0D, 0x00)  # Set FIFO address to read
+        #write_register(0x12, 0x40)  # Clear the RX done flag
+        write_register(0x0D, read_register(0x10))  # Set FIFO address to read
 
         # packet = []
         # packet_length = read_register(0x13)  # Length of the packet
@@ -56,6 +56,8 @@ def read_packet():
         #     packet.append(read_register(0x00))  # Read from FIFO
         packet = read_register(0x00)
         rssi = read_register(0x1A) - 157  # Calculate RSSI
+
+        write_register(0x0D, 0x00)  # Set FIFO pointer to the start
         write_register(0x12, 0x40)  # Clear the RX done flag
         write_register(0x01, 0x80 | 0x05)  # Restart continuous receive mode
         return packet, rssi
