@@ -2,6 +2,7 @@ import spidev
 import RPi.GPIO as GPIO
 import time
 
+spi = spidev.SpiDev()
 
 class LoraReceiver:
     def __init__(self):
@@ -10,20 +11,19 @@ class LoraReceiver:
         GPIO.setup(25, GPIO.OUT)  # Change 25 to your SX1278 NSS pin
 
         # Initialize SPI
-        self.spi = spidev.SpiDev()
-        self.spi.open(0, 0)  # Open SPI bus 0, device 0
-        self.spi.max_speed_hz = 5000000  # Set SPI speed to 5 MHz
+        spi.open(0, 0)  # Open SPI bus 0, device 0
+        spi.max_speed_hz = 5000000  # Set SPI speed to 5 MHz
         
         
     # SX1278 Register Configuration
     def write_register(self, register, value):
         GPIO.output(25, GPIO.LOW)  # Select the SX1278
-        self.spi.xfer2([register | 0x80, value])  # Write to register
+        spi.xfer2([register | 0x80, value])  # Write to register
         GPIO.output(25, GPIO.HIGH)  # Deselect the SX1278
 
     def read_register(selc, register):
         GPIO.output(25, GPIO.LOW)  # Select the SX1278
-        response = self.spi.xfer2([register & 0x7F, 0x00])  # Read from register
+        response = spi.xfer2([register & 0x7F, 0x00])  # Read from register
         GPIO.output(25, GPIO.HIGH)  # Deselect the SX1278
         return response[1]
 
