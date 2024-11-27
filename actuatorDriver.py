@@ -19,12 +19,13 @@ class ActuateDriver:
 actuator = ActuateDriver()
 
 def main():
-    print("Raising flag")
-    actuator.raiseFlag()
-    time.sleep(5)
-    print("Lowering flag")
-    actuator.lowerFlag()
-    time.sleep(5)
+    while(1):
+        print("Raising flag")
+        actuator.raiseFlag()
+        time.sleep(5)
+        print("Lowering flag")
+        actuator.lowerFlag()
+        time.sleep(5)
 
 if __name__ == "__main__":
     try:
