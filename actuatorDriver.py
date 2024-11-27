@@ -25,3 +25,10 @@ def main():
     print("Lowering flag")
     actuator.lowerFlag()
     time.sleep(5)
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        GPIO.cleanup()
+        spi.close()
