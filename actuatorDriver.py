@@ -19,7 +19,9 @@ class ActuateDriver:
 actuator = ActuateDriver()
 
 def main():
+    print("Raising flag")
     actuator.raiseFlag()
     time.sleep(5)
+    print("Lowering flag")
     actuator.lowerFlag()
     time.sleep(5)
