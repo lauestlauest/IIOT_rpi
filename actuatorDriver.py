@@ -3,6 +3,7 @@ import RPi.GPIO as GPIO
 
 class ActuateDriver:
     def __init__(self):
+        GPIO.cleanup()  # Reset any previous configurations
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(20, GPIO.OUT)
         GPIO.setup(21, GPIO.OUT)
@@ -14,7 +15,6 @@ class ActuateDriver:
     def lowerFlag(self):
         GPIO.output(20, GPIO.LOW)
         GPIO.output(21, GPIO.HIGH)
-
 
 actuator = ActuateDriver()
 
@@ -31,4 +31,3 @@ if __name__ == "__main__":
         main()
     except KeyboardInterrupt:
         GPIO.cleanup()
-        spi.close()
