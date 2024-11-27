@@ -22,10 +22,10 @@ def main():
     while(1):
         print("Raising flag")
         actuator.raiseFlag()
-        time.sleep(5)
+        time.sleep(10)
         print("Lowering flag")
         actuator.lowerFlag()
-        time.sleep(5)
+        time.sleep(10)
 
 if __name__ == "__main__":
     try:
